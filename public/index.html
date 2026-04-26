@@ -427,7 +427,7 @@ function logChange(whoId, tag, what){
 }
 
 // ── RENDER ──
-function render(){
+function _renderBase(){
   renderSidebar();
   renderHeaderBtn();
   if(view==='tasks') renderTasks();
@@ -435,6 +435,7 @@ function render(){
   else if(view==='report') renderReport();
   else if(view==='log') renderLog();
 }
+function render(){ _renderBase(); saveToServer(); }
 
 function renderHeaderBtn(){
   const btn=document.getElementById('headerBtn');
@@ -899,17 +900,18 @@ let saveTimeout=null;
 let appReady=false;
 
 function saveToServer(){
-  if(!appReady)return;
+  if(!appReady) return;
   clearTimeout(saveTimeout);
   saveTimeout=setTimeout(async()=>{
     showSaveIndicator('saving');
     try{
-      await fetch('/api/data',{
+      const res=await fetch('/api/data',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({tasks,employees:EMP,changelog,nid,eid})
       });
-      showSaveIndicator('saved');
+      if(res.ok) showSaveIndicator('saved');
+      else showSaveIndicator('error');
     }catch(e){
       showSaveIndicator('error');
     }
@@ -921,21 +923,18 @@ function showSaveIndicator(state){
   if(!ind){
     ind=document.createElement('div');
     ind.id='save-ind';
-    ind.style.cssText='position:fixed;bottom:16px;right:16px;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;font-family:Manrope,sans-serif;z-index:999;transition:opacity .3s;box-shadow:0 2px 8px rgba(0,0,0,.1);';
+    ind.style.cssText='position:fixed;bottom:16px;right:16px;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;font-family:Manrope,sans-serif;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.12);';
     document.body.appendChild(ind);
   }
-  if(state==='saving'){ind.style.opacity='1';ind.style.background='#f0ede8';ind.style.color='#8a8278';ind.textContent='⏳ Zapisywanie...';}
-  else if(state==='saved'){ind.style.opacity='1';ind.style.background='#e8f5ee';ind.style.color='#2a7a4b';ind.textContent='✅ Zapisano';setTimeout(()=>{ind.style.opacity='0';},2000);}
-  else{ind.style.opacity='1';ind.style.background='#fde8e8';ind.style.color='#b91c1c';ind.textContent='⚠️ Błąd zapisu';}
+  if(state==='saving'){ind.style.background='#f0ede8';ind.style.color='#8a8278';ind.textContent='⏳ Zapisywanie...';}
+  else if(state==='saved'){ind.style.background='#e8f5ee';ind.style.color='#2a7a4b';ind.textContent='✅ Zapisano';setTimeout(()=>{ind.textContent='';},2500);}
+  else{ind.style.background='#fde8e8';ind.style.color='#b91c1c';ind.textContent='⚠️ Błąd zapisu';}
 }
-
-const _renderBase=render;
-function render(){_renderBase();saveToServer();}
 
 // ── START ──
 async function init(){
   document.getElementById('mainArea').innerHTML=
-    `<div style="display:flex;align-items:center;justify-content:center;height:60vh;color:#8a8278;font-size:14px;font-family:Manrope,sans-serif;">⏳ Ładowanie danych...</div>`;
+    '<div style="display:flex;align-items:center;justify-content:center;height:60vh;color:#8a8278;font-size:14px;font-family:Manrope,sans-serif;">⏳ Ładowanie danych...</div>';
   try{
     const res=await fetch('/api/data');
     if(res.ok){
@@ -947,7 +946,7 @@ async function init(){
       if(data.eid) eid=data.eid;
     }
   }catch(e){
-    console.warn('Tryb lokalny');
+    console.warn('Tryb lokalny — brak serwera');
   }
   appReady=true;
   _renderBase();
