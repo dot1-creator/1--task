@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redakcja — Zadania</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f4ef;--surface:#fff;--surface2:#f0ede8;--border:#e0dbd2;
+  --text:#1a1714;--muted:#8a8278;--accent:#c8421a;--accent2:#e8956a;
+  --green:#2a7a4b;--green-bg:#e8f5ee;
+  --orange:#c86a1a;--orange-bg:#fdf0e6;
+  --red:#b91c1c;--red-bg:#fde8e8;
+  --blue:#1a4a8a;--blue-bg:#e8f0fb;
+  --pause:#7c3aed;--pause-bg:#f0eafb;
+  --sh:0 2px 16px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+header{background:var(--text);color:#f7f4ef;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;position:sticky;top:0;z-index:200;gap:12px;}
+.logo{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;white-space:nowrap;}
+.logo span{color:var(--accent2);}
+.htabs{display:flex;gap:3px;flex-wrap:wrap;}
+.htab{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#a09890;font-family:'Manrope',sans-serif;transition:all .15s;white-space:nowrap;}
+.htab:hover{color:#f7f4ef;}
+.htab.active{background:var(--accent);color:#fff;}
+.btn-new{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:6px;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .15s;white-space:nowrap;}
+.btn-new:hover{opacity:.85;}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px);}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;overflow-y:auto;}
+.sb-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;padding:0 6px;display:flex;align-items:center;justify-content:space-between;}
+.sb-add-btn{background:transparent;border:none;color:var(--accent);font-size:17px;cursor:pointer;line-height:1;padding:0 2px;transition:opacity .15s;}
+.sb-add-btn:hover{opacity:.7;}
+.emp-btn{display:flex;align-items:center;gap:9px;width:100%;padding:7px 8px;border-radius:8px;border:none;background:transparent;cursor:pointer;text-align:left;transition:background .12s;margin-bottom:2px;font-family:'Manrope',sans-serif;}
+.emp-btn:hover,.emp-btn.active{background:var(--surface2);}
+.emp-btn.active{box-shadow:inset 3px 0 0 var(--accent);}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.emp-meta{flex:1;min-width:0;}
+.emp-name-sb{font-size:12px;font-weight:700;}
+.emp-load-sb{font-size:10px;color:var(--muted);margin-top:1px;}
+.lb{height:3px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.lbf{height:100%;border-radius:2px;transition:width .4s;}
+
+/* MAIN TASKS */
+.main{padding:22px 26px;}
+.main-top{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.view-title{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:900;flex:1;}
+.sort-wrap{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);font-weight:700;}
+.sort-sel{border:1px solid var(--border);background:var(--surface);padding:5px 9px;border-radius:6px;font-family:'Manrope',sans-serif;font-size:11px;color:var(--text);cursor:pointer;outline:none;}
+.frow{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap;}
+.ftab{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Manrope',sans-serif;transition:all .15s;}
+.ftab:hover,.ftab.active{background:var(--text);color:#fff;border-color:var(--text);}
+
+/* TASK CARDS */
+.tasks-list{display:flex;flex-direction:column;gap:10px;}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .15s;box-shadow:var(--sh);animation:sli .25s ease;}
+@keyframes sli{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.tc:hover{box-shadow:0 4px 22px rgba(0,0,0,.11);}
+.tc-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;}
+.ptag{padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;}
+.p-high{background:var(--red-bg);color:var(--red);}
+.p-mid{background:var(--orange-bg);color:var(--orange);}
+.p-low{background:var(--blue-bg);color:var(--blue);}
+.tc-title-wrap{flex:1;min-width:0;}
+.tc-title{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;}
+.tc-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.tc-meta{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.dlbadge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.dl-ok{background:var(--green-bg);color:var(--green);}
+.dl-soon{background:var(--orange-bg);color:var(--orange);}
+.dl-over{background:var(--red-bg);color:var(--red);}
+.tc-pct{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;min-width:36px;text-align:right;}
+.chev{color:var(--muted);font-size:11px;transition:transform .2s;}
+.tc.open .chev{transform:rotate(180deg);}
+.tc-progbar{height:3px;background:var(--border);}
+.tc-progfill{height:100%;transition:width .4s;}
+
+/* STAGES */
+.stages-wrap{padding:0 16px 12px;border-top:1px solid var(--border);display:none;}
+.tc.open .stages-wrap{display:block;}
+.stages-ttl{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;padding:10px 0 8px;}
+.sg-table{width:100%;border-collapse:collapse;}
+.sg-table th{text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;padding:0 7px 7px;border-bottom:1px solid var(--border);}
+.sg-row{border-bottom:1px solid var(--border);}
+.sg-row:last-child{border-bottom:none;}
+.sg-row td{padding:9px 7px;vertical-align:middle;}
+.sg-name{font-size:12px;font-weight:700;}
+.sg-emp-name{font-size:10px;margin-top:1px;font-weight:600;}
+.sg-emp-missing{font-size:10px;color:var(--red);margin-top:1px;}
+.sg-bar-wrap{display:flex;align-items:center;gap:6px;}
+.sg-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;cursor:pointer;}
+.sg-fill{height:100%;border-radius:3px;transition:width .4s;}
+.sg-pct{font-size:10px;font-weight:700;min-width:28px;text-align:right;color:var(--muted);}
+.sg-vol{font-size:11px;color:var(--muted);font-weight:600;text-align:center;}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;}
+.sb-pending{background:var(--surface2);color:var(--muted);}
+.sb-inwork{background:var(--green-bg);color:var(--green);}
+.sb-pause{background:var(--pause-bg);color:var(--pause);}
+.sb-done{background:var(--green-bg);color:var(--green);}
+.ibtn{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .12s;color:var(--muted);}
+.ibtn:hover{border-color:var(--accent);color:var(--accent);}
+.tc-actions{display:none;gap:8px;padding:0 16px 10px;justify-content:flex-end;}
+.tc.open .tc-actions{display:flex;}
+.txbtn{font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;color:var(--muted);background:transparent;border:1px solid var(--border);padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .12s;}
+.txbtn:hover{border-color:var(--accent);color:var(--accent);}
+.txbtn.danger:hover{border-color:var(--red);color:var(--red);}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .ico{font-size:40px;margin-bottom:10px;}
+
+/* EMPLOYEE VIEW */
+.emp-view{padding:22px 26px;}
+.emp-view-hero{display:flex;align-items:center;gap:20px;margin-bottom:24px;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--sh);}
+.emp-hero-av{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0;}
+.emp-hero-info{flex:1;}
+.emp-hero-name{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:900;}
+.emp-hero-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.emp-hero-stats{display:flex;gap:18px;}
+.ehs{text-align:center;}
+.ehs-val{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:900;}
+.ehs-lbl{font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;white-space:nowrap;}
+.section-title{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.emp-task-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;box-shadow:var(--sh);}
+.emp-task-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.emp-task-title{font-weight:700;font-size:13px;flex:1;}
+.emp-stage-item{display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--surface2);border-radius:8px;margin-bottom:5px;flex-wrap:wrap;}
+.emp-stage-item:last-child{margin-bottom:0;}
+.emp-stage-name{font-size:12px;font-weight:600;flex:1;}
+.emp-stage-vol{font-size:11px;color:var(--muted);white-space:nowrap;}
+.emp-stage-bar-wrap{display:flex;align-items:center;gap:6px;width:110px;flex-shrink:0;}
+.emp-stage-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.emp-stage-fill{height:100%;border-radius:2px;transition:width .4s;}
+.emp-stage-pct{font-size:10px;font-weight:700;color:var(--muted);min-width:26px;text-align:right;}
+.emp-edit-btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:opacity .12s;white-space:nowrap;}
+.emp-edit-btn:hover{opacity:.85;}
+
+/* REPORT */
+.report-wrap{padding:22px 26px;}
+.report-ttl{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:900;margin-bottom:18px;}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:var(--sh);}
+.rc-head{padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.rc-body{padding:12px 16px;}
+.rsr{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12px;border-bottom:1px solid var(--border);}
+.rsr:last-child{border-bottom:none;}
+.rsr-name{flex:1;font-weight:600;}
+.r-ok{color:var(--green);font-weight:700;font-size:11px;}
+.r-stuck{color:var(--red);font-weight:700;font-size:11px;}
+.r-pend{color:var(--muted);font-size:11px;}
+.stuck-alert{margin-top:8px;padding:7px 12px;background:var(--red-bg);border-radius:8px;font-size:11px;color:var(--red);font-weight:700;}
+
+/* CHANGELOG */
+.log-wrap{padding:22px 26px;}
+.log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.log-ttl{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:900;}
+.log-clear-btn{font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;color:var(--muted);background:transparent;border:1px solid var(--border);padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .12s;}
+.log-clear-btn:hover{border-color:var(--red);color:var(--red);}
+.log-entry{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;box-shadow:var(--sh);animation:sli .2s ease;}
+.log-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.log-body{flex:1;}
+.log-who{font-size:12px;font-weight:700;}
+.log-what{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
+.log-what strong{color:var(--text);}
+.log-when{font-size:10px;color:var(--muted);margin-top:3px;}
+.log-tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;margin-right:4px;}
+.lt-task{background:var(--blue-bg);color:var(--blue);}
+.lt-stage{background:var(--orange-bg);color:var(--orange);}
+.lt-emp{background:var(--green-bg);color:var(--green);}
+.lt-del{background:var(--red-bg);color:var(--red);}
+
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(26,23,20,.55);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding-top:54px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border-radius:16px;width:580px;max-width:96vw;max-height:86vh;overflow-y:auto;padding:26px;transform:translateY(10px);transition:transform .2s;box-shadow:0 8px 48px rgba(0,0,0,.2);}
+.overlay.open .modal{transform:none;}
+.modal-ttl{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;margin-bottom:18px;}
+.fg{margin-bottom:13px;}
+.flabel{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:5px;}
+.fi{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Manrope',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--accent);}
+select.fi option{background:#fff;}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mactions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+.btn-cancel{background:transparent;border:1.5px solid var(--border);padding:8px 16px;border-radius:8px;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
+.btn-cancel:hover{border-color:var(--text);color:var(--text);}
+.btn-save{background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:opacity .15s;}
+.btn-save:hover{opacity:.88;}
+
+/* STAGE CONFIG TABLE */
+.scfg-head{display:grid;grid-template-columns:1fr 75px 56px 1fr;gap:8px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;padding:4px 0 7px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.scfg-row{display:grid;grid-template-columns:1fr 75px 56px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
+.scfg-row:last-child{border-bottom:none;}
+.scfg-check-label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.scfg-check-label input{accent-color:var(--accent);width:14px;height:14px;}
+.scfg-name{font-size:12px;font-weight:600;}
+.ci{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-size:11px;font-family:'Manrope',sans-serif;color:var(--text);outline:none;}
+.ci:focus{border-color:var(--accent);}
+.ci:disabled{opacity:.35;}
+
+/* RANGE SLIDER */
+.pct-slider{width:100%;accent-color:var(--accent);margin-top:4px;}
+
+/* COLOR SWATCHES */
+.color-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .12s;}
+.swatch:hover{transform:scale(1.15);}
+.swatch.selected{border-color:var(--text);}
+
+/* WHO SELECT HINT */
+.who-hint{font-size:10px;color:var(--muted);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RED<span>.</span>ZADANIA</div>
+  <div class="htabs">
+    <button class="htab active" onclick="setView('tasks',this)">Zadania</button>
+    <button class="htab" onclick="setView('employee',this)">Moje zadania</button>
+    <button class="htab" onclick="setView('report',this)">Raport</button>
+    <button class="htab" onclick="setView('log',this)">Historia</button>
+  </div>
+  <button class="btn-new" id="headerBtn" onclick="headerBtnClick()">+ ZADANIE</button>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-label">
+      Pracownicy
+      <button class="sb-add-btn" title="Dodaj pracownika" onclick="openAddEmp()">＋</button>
+    </div>
+    <div id="empList"></div>
+  </div>
+  <div id="mainArea"></div>
+</div>
+
+<!-- MODAL: NOWE / EDYTUJ ZADANIE -->
+<div class="overlay" id="taskOv" onclick="closeOuter(event,'taskOv')">
+<div class="modal">
+  <div class="modal-ttl" id="taskMttl">Nowe zadanie</div>
+  <div class="fg">
+    <label class="flabel">Tytuł zadania</label>
+    <input class="fi" id="fTitle" placeholder="O co chodzi?">
+  </div>
+  <div class="frow2">
+    <div class="fg">
+      <label class="flabel">Termin</label>
+      <input class="fi" id="fDeadline" type="date">
+    </div>
+    <div class="fg">
+      <label class="flabel">Priorytet</label>
+      <select class="fi" id="fPrio">
+        <option value="high">🔴 Wysoki</option>
+        <option value="mid" selected>🟡 Średni</option>
+        <option value="low">🟢 Niski</option>
+      </select>
+    </div>
+  </div>
+  <div class="fg">
+    <label class="flabel">Wybierz etapy — objętość i wykonawca</label>
+    <div class="scfg-head"><div>Etap</div><div>Objętość</div><div>Jedn.</div><div>Wykonawca</div></div>
+    <div id="stagesCfg"></div>
+  </div>
+  <div class="mactions">
+    <button class="btn-cancel" onclick="closeOv('taskOv')">Anuluj</button>
+    <button class="btn-save" onclick="saveTask()">ZAPISZ</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: EDYTUJ ETAP -->
+<div class="overlay" id="stageOv" onclick="closeOuter(event,'stageOv')">
+<div class="modal" style="width:400px">
+  <div class="modal-ttl" id="stageMttl">Etap</div>
+  <div class="fg">
+    <label class="flabel">Wykonawca</label>
+    <select class="fi" id="seEmp"></select>
+  </div>
+  <div class="frow2">
+    <div class="fg">
+      <label class="flabel">Objętość</label>
+      <input class="fi" id="seVol" type="number" min="0">
+    </div>
+    <div class="fg">
+      <label class="flabel">Jednostka</label>
+      <select class="fi" id="seUnit">
+        <option value="godz">godz (godziny)</option>
+        <option value="szt">szt</option>
+        <option value="dni">dni</option>
+      </select>
+    </div>
+  </div>
+  <div class="fg">
+    <label class="flabel">Status</label>
+    <select class="fi" id="seStatus">
+      <option value="pending">Nie rozpoczęty</option>
+      <option value="inwork">W trakcie</option>
+      <option value="pause">Wstrzymany</option>
+      <option value="done">Gotowy</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label class="flabel">Postęp: <span id="sePctLbl">0</span>%</label>
+    <input type="range" class="pct-slider" id="sePct" min="0" max="100" value="0"
+      oninput="document.getElementById('sePctLbl').textContent=this.value">
+  </div>
+  <div class="fg">
+    <label class="flabel">Kto wprowadza zmianę</label>
+    <select class="fi" id="seWho"></select>
+    <div class="who-hint">Wybierz siebie — zmiana zostanie zapisana w historii</div>
+  </div>
+  <div class="mactions">
+    <button class="btn-cancel" onclick="closeOv('stageOv')">Anuluj</button>
+    <button class="btn-save" onclick="saveStage()">ZAPISZ</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: DODAJ PRACOWNIKA -->
+<div class="overlay" id="empOv" onclick="closeOuter(event,'empOv')">
+<div class="modal" style="width:360px">
+  <div class="modal-ttl">Nowy pracownik</div>
+  <div class="fg">
+    <label class="flabel">Imię / Nazwa</label>
+    <input class="fi" id="empName" placeholder="Jak się nazywa?">
+  </div>
+  <div class="fg">
+    <label class="flabel">Kolor</label>
+    <div class="color-swatches" id="colorSwatches"></div>
+  </div>
+  <div class="mactions">
+    <button class="btn-cancel" onclick="closeOv('empOv')">Anuluj</button>
+    <button class="btn-save" onclick="saveEmp()">DODAJ</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ── DANE ──
+const PALETTE=['#c8421a','#2a7a4b','#1a4a8a','#7c3aed','#c86a1a','#b91c1c','#0e7490','#be185d','#15803d','#6d28d9','#b45309','#1d4ed8'];
+
+const STAGE_DEFS=[
+  'Redakcja (czytanie redaktorskie)',
+  'Skład',
+  'Obróbka zdjęć',
+  'Korekta (czytanie korektorskie)',
+  'Nanoszenie poprawek',
+  'Projekt okładki',
+  'Druk'
+];
+
+const SL={pending:'Nie rozpoczęty',inwork:'W trakcie',pause:'Wstrzymany',done:'Gotowy'};
+const SC={pending:'sb-pending',inwork:'sb-inwork',pause:'sb-pause',done:'sb-done'};
+const PL={high:'Wysoki',mid:'Średni',low:'Niski'};
+const PLC={high:'p-high',mid:'p-mid',low:'p-low'};
+
+let EMP=[
+  {id:'szef', name:'Szef',    color:'#c8421a'},
+  {id:'aga',  name:'Aga',     color:'#2a7a4b'},
+  {id:'gzh',  name:'Grzegorz',color:'#1a4a8a'},
+  {id:'olya', name:'Ola',     color:'#7c3aed'},
+  {id:'eva',  name:'Ewa',     color:'#c86a1a'},
+];
+
+let tasks=[], changelog=[], nid=1, eid=100;
+let view='tasks', fstatus='all', sort='priority', empF=null;
+let editTaskId=null, editStageCtx=null, selectedColor=PALETTE[0];
+
+// ── UTILS ──
+function eObj(id){return EMP.find(e=>e.id===id);}
+function today(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function pd(s){return s?new Date(s+'T00:00:00'):null;}
+function fmtDate(s){
+  if(!s)return'—';
+  const p=s.split('-');return`${p[2]}.${p[1]}.${p[0]}`;
+}
+function nowStr(){
+  const n=new Date();
+  return n.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'})
+    +' '+n.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+}
+function dlc(task){
+  if(!task.deadline)return'dl-ok';
+  const d=pd(task.deadline),t=today();
+  if(d<t)return'dl-over';
+  if((d-t)/86400000<=3)return'dl-soon';
+  return'dl-ok';
+}
+function tPct(task){
+  const a=task.stages.filter(s=>s.on);
+  if(!a.length)return 0;
+  return Math.round(a.reduce((s,x)=>s+(x.pct||0),0)/a.length);
+}
+function sColor(p){
+  if(p>=100)return'#2a7a4b';
+  if(p>=60)return'#1a4a8a';
+  if(p>=20)return'#c86a1a';
+  return'#e0dbd2';
+}
+function empHrs(eid){
+  let h=0;
+  tasks.forEach(t=>t.stages
+    .filter(s=>s.on&&s.empId===eid&&s.unit==='godz'&&s.status!=='done')
+    .forEach(s=>{h+=parseFloat(s.vol||0);}));
+  return h;
+}
+function sortedTasks(list){
+  const po={high:0,mid:1,low:2};
+  return[...list].sort((a,b)=>{
+    if(sort==='priority'){const d=po[a.priority]-po[b.priority];if(d)return d;}
+    const da=pd(a.deadline),db=pd(b.deadline);
+    if(!da&&!db)return 0;if(!da)return 1;if(!db)return-1;
+    return da-db;
+  });
+}
+function logChange(whoId, tag, what){
+  changelog.unshift({whoId, tag, what, when:nowStr()});
+}
+
+// ── RENDER ──
+function render(){
+  renderSidebar();
+  renderHeaderBtn();
+  if(view==='tasks') renderTasks();
+  else if(view==='employee') renderEmpView();
+  else if(view==='report') renderReport();
+  else if(view==='log') renderLog();
+}
+
+function renderHeaderBtn(){
+  const btn=document.getElementById('headerBtn');
+  if(view==='tasks'){btn.style.display='';btn.textContent='+ ZADANIE';}
+  else{btn.style.display='none';}
+}
+
+function renderSidebar(){
+  let h=`<button class="emp-btn ${empF===null?'active':''}" onclick="setEmpF(null)">
+    <div class="av" style="background:#e0dbd2;color:#8a8278">WS</div>
+    <div class="emp-meta"><div class="emp-name-sb">Wszyscy</div></div>
+  </button>`;
+  EMP.forEach(e=>{
+    const hrs=empHrs(e.id);
+    const lp=Math.min(100,hrs/40*100);
+    const lc=lp>80?'#b91c1c':lp>50?'#c86a1a':'#2a7a4b';
+    const init=e.name.slice(0,2).toUpperCase();
+    h+=`<button class="emp-btn ${empF===e.id?'active':''}" onclick="setEmpF('${e.id}')">
+      <div class="av" style="background:${e.color}22;color:${e.color}">${init}</div>
+      <div class="emp-meta">
+        <div class="emp-name-sb">${e.name}</div>
+        <div class="emp-load-sb">${hrs} godz. do przodu</div>
+        <div class="lb"><div class="lbf" style="width:${lp}%;background:${lc}"></div></div>
+      </div>
+    </button>`;
+  });
+  document.getElementById('empList').innerHTML=h;
+}
+
+// ── WIDOK ZADAŃ ──
+function renderTasks(){
+  let list=tasks.filter(t=>{
+    if(empF&&!t.stages.some(s=>s.on&&s.empId===empF))return false;
+    if(fstatus==='all')return true;
+    if(fstatus==='done')return tPct(t)===100;
+    if(fstatus==='overdue'){const d=pd(t.deadline);return d&&d<today()&&tPct(t)<100;}
+    if(fstatus==='pause')return t.stages.some(s=>s.on&&s.status==='pause');
+    return t.stages.some(s=>s.on&&s.status===fstatus);
+  });
+  list=sortedTasks(list);
+  const ttl=empF?eObj(empF)?.name:'Wszystkie zadania';
+  let h=`<div class="main">
+  <div class="main-top">
+    <div class="view-title">${ttl}</div>
+    <div class="sort-wrap">Sortuj:
+      <select class="sort-sel" onchange="setSort(this.value)">
+        <option value="priority" ${sort==='priority'?'selected':''}>Wg priorytetu</option>
+        <option value="deadline" ${sort==='deadline'?'selected':''}>Wg terminu</option>
+      </select>
+    </div>
+  </div>
+  <div class="frow">
+    <button class="ftab ${fstatus==='all'?'active':''}" onclick="setF('all')">Wszystkie</button>
+    <button class="ftab ${fstatus==='inwork'?'active':''}" onclick="setF('inwork')">W trakcie</button>
+    <button class="ftab ${fstatus==='pause'?'active':''}" onclick="setF('pause')">Wstrzymane</button>
+    <button class="ftab ${fstatus==='overdue'?'active':''}" onclick="setF('overdue')">🔴 Przeterminowane</button>
+    <button class="ftab ${fstatus==='done'?'active':''}" onclick="setF('done')">Gotowe</button>
+  </div>
+  <div class="tasks-list">`;
+  if(!list.length) h+=`<div class="empty"><div class="ico">📭</div><p>Brak zadań</p></div>`;
+  else list.forEach(t=>{h+=taskCard(t);});
+  h+=`</div></div>`;
+  document.getElementById('mainArea').innerHTML=h;
+}
+
+function taskCard(t){
+  const p=tPct(t),bc=sColor(p);
+  const active=t.stages.filter(s=>s.on);
+  const done=active.filter(s=>s.status==='done').length;
+  let sgHtml='';
+  if(active.length){
+    sgHtml=`<div class="stages-wrap"><div class="stages-ttl">Etapy</div>
+    <table class="sg-table"><thead><tr>
+      <th>Etap / Wykonawca</th><th>Postęp</th><th style="text-align:center">Objętość</th><th>Status</th><th></th>
+    </tr></thead><tbody>`;
+    active.forEach(s=>{
+      const ri=t.stages.indexOf(s),e2=eObj(s.empId),sp=s.pct||0;
+      sgHtml+=`<tr class="sg-row">
+        <td>
+          <div class="sg-name">${s.name}</div>
+          ${e2?`<div class="sg-emp-name" style="color:${e2.color}">${e2.name}</div>`:'<div class="sg-emp-missing">Brak wykonawcy</div>'}
+        </td>
+        <td><div class="sg-bar-wrap">
+          <div class="sg-bar" onclick="openStageEdit(${t.id},${ri})">
+            <div class="sg-fill" style="width:${sp}%;background:${sColor(sp)}"></div>
+          </div>
+          <span class="sg-pct">${sp}%</span>
+        </div></td>
+        <td class="sg-vol">${s.vol||'—'} ${s.unit||''}</td>
+        <td><span class="sbadge ${SC[s.status]||'sb-pending'}">${SL[s.status]||'—'}</span></td>
+        <td><button class="ibtn" onclick="openStageEdit(${t.id},${ri})" title="Edytuj">✏️</button></td>
+      </tr>`;
+    });
+    sgHtml+=`</tbody></table></div>`;
+  }
+  return`<div class="tc" id="tc-${t.id}">
+    <div class="tc-head" onclick="togCard(${t.id})">
+      <span class="ptag ${PLC[t.priority]}">${PL[t.priority]}</span>
+      <div class="tc-title-wrap">
+        <div class="tc-title">${t.title}</div>
+        <div class="tc-sub">${active.length} etap(ów) · ${done} gotowe</div>
+      </div>
+      <div class="tc-meta">
+        <span class="dlbadge ${dlc(t)}">${fmtDate(t.deadline)}</span>
+        <span class="tc-pct">${p}%</span>
+        <span class="chev">▼</span>
+      </div>
+    </div>
+    <div class="tc-progbar"><div class="tc-progfill" style="width:${p}%;background:${bc}"></div></div>
+    ${sgHtml}
+    <div class="tc-actions">
+      <button class="txbtn" onclick="openEditTask(${t.id})">✏️ Edytuj zadanie</button>
+      <button class="txbtn danger" onclick="delTask(${t.id})">🗑 Usuń</button>
+    </div>
+  </div>`;
+}
+
+function togCard(id){document.getElementById('tc-'+id).classList.toggle('open');}
+
+// ── WIDOK PRACOWNIKA ──
+function renderEmpView(){
+  const empId=empF;
+  if(!empId||!eObj(empId)){
+    document.getElementById('mainArea').innerHTML=`<div class="emp-view">
+      <div class="empty"><div class="ico">👤</div>
+      <p>Wybierz pracownika w panelu bocznym,<br>aby zobaczyć jego zadania</p></div></div>`;
+    return;
+  }
+  const e=eObj(empId);
+  const myItems=[];
+  tasks.forEach(t=>{
+    t.stages.filter(s=>s.on&&s.empId===empId).forEach(s=>{
+      myItems.push({task:t,stage:s,si:t.stages.indexOf(s)});
+    });
+  });
+
+  const totalHrs=myItems.filter(x=>x.stage.unit==='godz'&&x.stage.status!=='done')
+    .reduce((a,x)=>a+parseFloat(x.stage.vol||0),0);
+  const inwork=myItems.filter(x=>x.stage.status==='inwork').length;
+  const pending=myItems.filter(x=>x.stage.status==='pending').length;
+  const done=myItems.filter(x=>x.stage.status==='done').length;
+  const paused=myItems.filter(x=>x.stage.status==='pause').length;
+  const init=e.name.slice(0,2).toUpperCase();
+
+  // Group by task
+  const byTask={};
+  myItems.forEach(x=>{
+    if(!byTask[x.task.id]) byTask[x.task.id]=[];
+    byTask[x.task.id].push(x);
+  });
+  const po={high:0,mid:1,low:2};
+  const taskIds=Object.keys(byTask).sort((a,b)=>{
+    const ta=tasks.find(t=>t.id==a),tb=tasks.find(t=>t.id==b);
+    const aDone=byTask[a].every(x=>x.stage.status==='done');
+    const bDone=byTask[b].every(x=>x.stage.status==='done');
+    if(aDone!==bDone)return aDone?1:-1;
+    return (po[ta?.priority]||1)-(po[tb?.priority]||1);
+  });
+
+  let h=`<div class="emp-view">
+  <div class="emp-view-hero">
+    <div class="emp-hero-av" style="background:${e.color}22;color:${e.color}">${init}</div>
+    <div class="emp-hero-info">
+      <div class="emp-hero-name">${e.name}</div>
+      <div class="emp-hero-sub">Lista zadań i etapów</div>
+    </div>
+    <div class="emp-hero-stats">
+      <div class="ehs"><div class="ehs-val" style="color:var(--accent)">${totalHrs}</div><div class="ehs-lbl">godz. do przodu</div></div>
+      <div class="ehs"><div class="ehs-val" style="color:var(--green)">${inwork}</div><div class="ehs-lbl">W trakcie</div></div>
+      <div class="ehs"><div class="ehs-val" style="color:var(--muted)">${pending}</div><div class="ehs-lbl">Oczekuje</div></div>
+      <div class="ehs"><div class="ehs-val" style="color:var(--pause)">${paused}</div><div class="ehs-lbl">Wstrzymane</div></div>
+      <div class="ehs"><div class="ehs-val" style="color:var(--blue)">${done}</div><div class="ehs-lbl">Gotowe</div></div>
+    </div>
+  </div>`;
+
+  if(!myItems.length){
+    h+=`<div class="empty"><div class="ico">🎉</div><p>Brak przypisanych etapów</p></div>`;
+  } else {
+    h+=`<div class="section-title">Moje zadania i etapy</div>`;
+    taskIds.forEach(tid=>{
+      const t=tasks.find(x=>x.id==tid);if(!t)return;
+      const items=byTask[tid];
+      h+=`<div class="emp-task-card">
+        <div class="emp-task-top">
+          <span class="ptag ${PLC[t.priority]}">${PL[t.priority]}</span>
+          <div class="emp-task-title">${t.title}</div>
+          <span class="dlbadge ${dlc(t)}">${fmtDate(t.deadline)}</span>
+          <span style="font-family:'Unbounded',sans-serif;font-size:13px;font-weight:900;color:${sColor(tPct(t))}">${tPct(t)}%</span>
+        </div>`;
+      items.forEach(({stage:s,si})=>{
+        const sp=s.pct||0;
+        h+=`<div class="emp-stage-item">
+          <span class="sbadge ${SC[s.status]||'sb-pending'}" style="flex-shrink:0">${SL[s.status]}</span>
+          <span class="emp-stage-name">${s.name}</span>
+          <span class="emp-stage-vol">${s.vol||'—'} ${s.unit||''}</span>
+          <div class="emp-stage-bar-wrap">
+            <div class="emp-stage-bar"><div class="emp-stage-fill" style="width:${sp}%;background:${sColor(sp)}"></div></div>
+            <span class="emp-stage-pct">${sp}%</span>
+          </div>
+          <button class="emp-edit-btn" onclick="openStageEditAsEmp(${t.id},${si},'${empId}')">Zaznacz postęp</button>
+        </div>`;
+      });
+      h+=`</div>`;
+    });
+  }
+  h+=`</div>`;
+  document.getElementById('mainArea').innerHTML=h;
+}
+
+// ── RAPORT ──
+function renderReport(){
+  let h=`<div class="report-wrap"><div class="report-ttl">Raport — stan zadań</div>`;
+  if(!tasks.length) h+=`<div class="empty"><div class="ico">📋</div><p>Brak zadań</p></div>`;
+  sortedTasks(tasks).forEach(t=>{
+    const p=tPct(t),a=t.stages.filter(s=>s.on);
+    const stuck=a.filter(s=>s.status==='pause');
+    h+=`<div class="rc"><div class="rc-head">
+      <span class="ptag ${PLC[t.priority]}">${PL[t.priority]}</span>
+      <strong style="flex:1;font-size:13px">${t.title}</strong>
+      <span class="dlbadge ${dlc(t)}">${fmtDate(t.deadline)}</span>
+      <strong style="font-size:14px;font-family:'Unbounded',sans-serif;min-width:40px;text-align:right">${p}%</strong>
+    </div><div class="rc-body">`;
+    a.forEach(s=>{
+      const e2=eObj(s.empId);
+      const ico={pending:'⏳',inwork:'🔄',pause:'⏸️',done:'✅'}[s.status]||'⏳';
+      const cls={pending:'r-pend',inwork:'r-pend',pause:'r-stuck',done:'r-ok'}[s.status];
+      h+=`<div class="rsr"><span>${ico}</span>
+        <span class="rsr-name">${s.name}</span>
+        <span style="font-size:11px;color:${e2?e2.color:'var(--muted)'};font-weight:600">${e2?e2.name:'—'}</span>
+        <span class="${cls}">${SL[s.status]}</span>
+        <span style="font-size:11px;color:var(--muted)">${s.pct||0}%</span>
+      </div>`;
+    });
+    if(stuck.length) h+=`<div class="stuck-alert">⛔ Zablokowane na: ${stuck.map(s=>s.name).join(', ')}</div>`;
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  document.getElementById('mainArea').innerHTML=h;
+}
+
+// ── HISTORIA ──
+function renderLog(){
+  const tagLabels={task:'Zadanie',stage:'Etap',emp:'Pracownik',del:'Usunięto'};
+  const tagCls={task:'lt-task',stage:'lt-stage',emp:'lt-emp',del:'lt-del'};
+  let h=`<div class="log-wrap">
+  <div class="log-header">
+    <div class="log-ttl">Historia zmian</div>
+    ${changelog.length?`<button class="log-clear-btn" onclick="clearLog()">Wyczyść historię</button>`:''}
+  </div>`;
+  if(!changelog.length){
+    h+=`<div class="empty"><div class="ico">📜</div><p>Brak zmian</p></div>`;
+  } else {
+    changelog.forEach(entry=>{
+      const e=eObj(entry.whoId)||{name:'System',color:'#8a8278'};
+      const init=e.name.slice(0,2).toUpperCase();
+      const tLabel=tagLabels[entry.tag]||'';
+      const tCls=tagCls[entry.tag]||'lt-task';
+      h+=`<div class="log-entry">
+        <div class="log-av" style="background:${e.color}22;color:${e.color}">${init}</div>
+        <div class="log-body">
+          <div class="log-who">${e.name} <span class="log-tag ${tCls}">${tLabel}</span></div>
+          <div class="log-what">${entry.what}</div>
+          <div class="log-when">🕐 ${entry.when}</div>
+        </div>
+      </div>`;
+    });
+  }
+  h+=`</div>`;
+  document.getElementById('mainArea').innerHTML=h;
+}
+
+function clearLog(){
+  if(confirm('Wyczyścić całą historię?')){changelog=[];renderLog();}
+}
+
+// ── MODAL ZADANIA ──
+function buildStageCfg(existing){
+  let h='';
+  STAGE_DEFS.forEach((name,i)=>{
+    const ex=existing?existing.find(s=>s.name===name):null;
+    const on=ex?ex.on:false;
+    const vol=ex?ex.vol:'';
+    const unit=ex?(ex.unit||'godz'):'godz';
+    const eid2=ex?ex.empId:'';
+    const dis=on?'':'disabled';
+    h+=`<div class="scfg-row">
+      <label class="scfg-check-label">
+        <input type="checkbox" id="sch-${i}" ${on?'checked':''} onchange="togStage(${i})">
+        <span class="scfg-name">${name}</span>
+      </label>
+      <input class="ci" id="scv-${i}" type="number" min="0" value="${vol}" placeholder="0" ${dis}>
+      <select class="ci" id="scu-${i}" ${dis}>
+        <option value="godz" ${unit==='godz'?'selected':''}>godz</option>
+        <option value="szt" ${unit==='szt'?'selected':''}>szt</option>
+        <option value="dni" ${unit==='dni'?'selected':''}>dni</option>
+      </select>
+      <select class="ci" id="sce-${i}" ${dis}>
+        <option value="">— Wykonawca —</option>
+        ${EMP.map(e=>`<option value="${e.id}" ${e.id===eid2?'selected':''}>${e.name}</option>`).join('')}
+      </select>
+    </div>`;
+  });
+  document.getElementById('stagesCfg').innerHTML=h;
+}
+
+function togStage(i){
+  const on=document.getElementById('sch-'+i).checked;
+  ['scv-','scu-','sce-'].forEach(p=>{document.getElementById(p+i).disabled=!on;});
+}
+
+function openNewTask(){
+  editTaskId=null;
+  document.getElementById('taskMttl').textContent='Nowe zadanie';
+  document.getElementById('fTitle').value='';
+  document.getElementById('fDeadline').value='';
+  document.getElementById('fPrio').value='mid';
+  buildStageCfg(null);
+  document.getElementById('taskOv').classList.add('open');
+}
+
+function openEditTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  editTaskId=id;
+  document.getElementById('taskMttl').textContent='Edytuj zadanie';
+  document.getElementById('fTitle').value=t.title;
+  document.getElementById('fDeadline').value=t.deadline||'';
+  document.getElementById('fPrio').value=t.priority;
+  buildStageCfg(t.stages);
+  document.getElementById('taskOv').classList.add('open');
+}
+
+function saveTask(){
+  const title=document.getElementById('fTitle').value.trim();
+  if(!title){alert('Wpisz tytuł zadania');return;}
+  const stages=STAGE_DEFS.map((name,i)=>{
+    const on=document.getElementById('sch-'+i).checked;
+    const vol=document.getElementById('scv-'+i).value;
+    const unit=document.getElementById('scu-'+i).value;
+    const empId=document.getElementById('sce-'+i).value;
+    let pct=0,status='pending';
+    if(editTaskId){
+      const ex=tasks.find(t=>t.id===editTaskId)?.stages.find(s=>s.name===name);
+      if(ex){pct=ex.pct||0;status=ex.status||'pending';}
+    }
+    return{name,on,vol,unit,empId,pct,status};
+  });
+  const data={title,deadline:document.getElementById('fDeadline').value,priority:document.getElementById('fPrio').value,stages};
+  if(editTaskId){
+    const i=tasks.findIndex(t=>t.id===editTaskId);
+    tasks[i]={...tasks[i],...data};
+    logChange('system','task',`Zadanie <strong>${title}</strong> zostało zaktualizowane`);
+  } else {
+    tasks.push({id:nid++,...data});
+    logChange('system','task',`Nowe zadanie: <strong>${title}</strong>`);
+  }
+  closeOv('taskOv');render();
+}
+
+// ── MODAL ETAPU ──
+function openStageEdit(tid,si){
+  const t=tasks.find(x=>x.id===tid);if(!t)return;
+  const s=t.stages[si];
+  editStageCtx={tid,si,locked:null};
+  document.getElementById('stageMttl').textContent=`${s.name}`;
+  document.getElementById('seEmp').innerHTML=`<option value="">— Brak —</option>`+
+    EMP.map(e=>`<option value="${e.id}" ${e.id===s.empId?'selected':''}>${e.name}</option>`).join('');
+  document.getElementById('seVol').value=s.vol||'';
+  document.getElementById('seUnit').value=s.unit||'godz';
+  document.getElementById('seStatus').value=s.status||'pending';
+  document.getElementById('sePct').value=s.pct||0;
+  document.getElementById('sePctLbl').textContent=s.pct||0;
+  const whoSel=document.getElementById('seWho');
+  whoSel.disabled=false;
+  whoSel.innerHTML=`<option value="">— Wybierz siebie —</option>`+
+    EMP.map(e=>`<option value="${e.id}" ${e.id===s.empId?'selected':''}>${e.name}</option>`).join('');
+  document.getElementById('stageOv').classList.add('open');
+}
+
+function openStageEditAsEmp(tid,si,empId){
+  openStageEdit(tid,si);
+  editStageCtx.locked=empId;
+  const whoSel=document.getElementById('seWho');
+  whoSel.value=empId;
+  whoSel.disabled=true;
+}
+
+function saveStage(){
+  if(!editStageCtx)return;
+  const{tid,si,locked}=editStageCtx;
+  const t=tasks.find(x=>x.id===tid);if(!t)return;
+  const s=t.stages[si];
+  const whoSel=document.getElementById('seWho');
+  const whoId=locked||whoSel.value;
+  const oldStatus=s.status,oldPct=s.pct||0;
+  s.empId=document.getElementById('seEmp').value||s.empId;
+  s.vol=document.getElementById('seVol').value;
+  s.unit=document.getElementById('seUnit').value;
+  s.status=document.getElementById('seStatus').value;
+  s.pct=parseInt(document.getElementById('sePct').value)||0;
+  if(s.status==='done')s.pct=100;
+  whoSel.disabled=false;
+  // Log
+  const changes=[];
+  if(oldStatus!==s.status) changes.push(`status: <strong>${SL[oldStatus]} → ${SL[s.status]}</strong>`);
+  if(oldPct!==s.pct) changes.push(`postęp: <strong>${oldPct}% → ${s.pct}%</strong>`);
+  if(changes.length){
+    const who=whoId||'system';
+    logChange(who,'stage',`«${t.title}» / ${s.name} — ${changes.join(', ')}`);
+  }
+  closeOv('stageOv');render();
+  if(view==='tasks'){
+    setTimeout(()=>{const c=document.getElementById('tc-'+tid);if(c&&!c.classList.contains('open'))togCard(tid);},60);
+  }
+}
+
+function delTask(id){
+  if(!confirm('Usunąć zadanie?'))return;
+  const t=tasks.find(x=>x.id===id);
+  logChange('system','del',`Usunięto zadanie: <strong>${t?.title||id}</strong>`);
+  tasks=tasks.filter(t=>t.id!==id);render();
+}
+
+// ── DODAJ PRACOWNIKA ──
+function openAddEmp(){
+  document.getElementById('empName').value='';
+  selectedColor=PALETTE[0];
+  document.getElementById('colorSwatches').innerHTML=PALETTE.map(c=>
+    `<div class="swatch ${c===selectedColor?'selected':''}" style="background:${c}" onclick="selectColor('${c}',this)"></div>`
+  ).join('');
+  document.getElementById('empOv').classList.add('open');
+}
+function selectColor(c,el){
+  selectedColor=c;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function saveEmp(){
+  const name=document.getElementById('empName').value.trim();
+  if(!name){alert('Wpisz imię');return;}
+  const id='emp_'+eid++;
+  EMP.push({id,name,color:selectedColor});
+  logChange('system','emp',`Dodano pracownika: <strong>${name}</strong>`);
+  closeOv('empOv');render();
+}
+
+// ── KONTROLKI ──
+function headerBtnClick(){if(view==='tasks')openNewTask();}
+function setView(v,el){
+  view=v;
+  document.querySelectorAll('.htab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function setF(f){fstatus=f;renderTasks();}
+function setSort(v){sort=v;renderTasks();}
+function setEmpF(id){empF=id;render();}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+function closeOuter(e,id){if(e.target.id===id)closeOv(id);}
+
+// ── SYNC Z SERWEREM ──
+let saveTimeout=null;
+let isSaving=false;
+
+function saveToServer(){
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(async()=>{
+    isSaving=true;
+    showSaveIndicator('saving');
+    try{
+      await fetch('/api/data',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({tasks,employees:EMP,changelog,nid,eid})
+      });
+      showSaveIndicator('saved');
+    }catch(e){
+      showSaveIndicator('error');
+    }
+    isSaving=false;
+  },600);
+}
+
+function showSaveIndicator(state){
+  let ind=document.getElementById('save-ind');
+  if(!ind){
+    ind=document.createElement('div');
+    ind.id='save-ind';
+    ind.style.cssText='position:fixed;bottom:16px;right:16px;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;font-family:Manrope,sans-serif;z-index:999;transition:opacity .3s;';
+    document.body.appendChild(ind);
+  }
+  if(state==='saving'){ind.style.background='#f0ede8';ind.style.color='#8a8278';ind.textContent='⏳ Zapisywanie...';}
+  else if(state==='saved'){ind.style.background='#e8f5ee';ind.style.color='#2a7a4b';ind.textContent='✅ Zapisano';setTimeout(()=>{ind.style.opacity='0';setTimeout(()=>{ind.style.opacity='1';},2000);},1500);}
+  else{ind.style.background='#fde8e8';ind.style.color='#b91c1c';ind.textContent='⚠️ Błąd zapisu';}
+}
+
+// Wrap render to also save
+const _render=render;
+function render(){_render();saveToServer();}
+
+// ── START: ładuj dane z serwera ──
+async function init(){
+  document.getElementById('mainArea').innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:60vh;color:#8a8278;font-size:14px;font-family:Manrope,sans-serif;">⏳ Ładowanie danych...</div>`;
+  try{
+    const res=await fetch('/api/data');
+    const db=await res.json();
+    if(db.tasks) tasks=db.tasks;
+    if(db.employees&&db.employees.length) EMP=db.employees;
+    if(db.changelog) changelog=db.changelog;
+    if(db.nid) nid=db.nid;
+    if(db.eid) eid=db.eid;
+  }catch(e){
+    console.log('Brak połączenia z serwerem, tryb lokalny');
+  }
+  _render();
+}
+
+init();
+</script>
+</body>
+</html>
