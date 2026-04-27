@@ -25,8 +25,8 @@ header{background:#1a1714;color:#f7f4ef;display:flex;align-items:center;justify-
 .logo{font-family:‘Unbounded’,sans-serif;font-size:13px;font-weight:900;letter-spacing:1px;white-space:nowrap;}
 .logo span{color:var(–accent2);}
 .htabs{display:flex;gap:3px;flex-wrap:wrap;}
-.htab{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#a09890;font-family:‘Manrope’,sans-serif;transition:all .15s;white-space:nowrap;}
-.htab:hover{color:#f7f4ef;}
+.htab{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:rgba(255,255,255,.08);color:#c8bfb8;font-family:‘Manrope’,sans-serif;transition:all .15s;white-space:nowrap;}
+.htab:hover{background:rgba(255,255,255,.16);color:#fff;}
 .htab.active{background:var(–accent);color:#fff;}
 .btn-new{background:var(–accent);color:#fff;border:none;padding:7px 16px;border-radius:6px;font-family:‘Unbounded’,sans-serif;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .15s;white-space:nowrap;}
 .btn-new:hover{opacity:.85;}
@@ -37,9 +37,13 @@ header{background:#1a1714;color:#f7f4ef;display:flex;align-items:center;justify-
 .sb-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(–muted);text-transform:uppercase;margin-bottom:8px;padding:0 6px;display:flex;align-items:center;justify-content:space-between;}
 .sb-add-btn{background:transparent;border:none;color:var(–accent);font-size:17px;cursor:pointer;line-height:1;padding:0 2px;transition:opacity .15s;}
 .sb-add-btn:hover{opacity:.7;}
-.emp-btn{display:flex;align-items:center;gap:9px;width:100%;padding:7px 8px;border-radius:8px;border:none;background:transparent;cursor:pointer;text-align:left;transition:background .12s;margin-bottom:2px;font-family:‘Manrope’,sans-serif;}
-.emp-btn:hover,.emp-btn.active{background:var(–surface2);}
-.emp-btn.active{box-shadow:inset 3px 0 0 var(–accent);}
+.emp-row{display:flex;align-items:center;border-radius:8px;margin-bottom:2px;transition:background .12s;}
+.emp-row:hover{background:var(–surface2);}
+.emp-row.active{background:var(–surface2);box-shadow:inset 3px 0 0 var(–accent);}
+.emp-btn{display:flex;align-items:center;gap:9px;flex:1;padding:7px 8px;border-radius:8px;border:none;background:transparent;cursor:pointer;text-align:left;font-family:‘Manrope’,sans-serif;}
+.emp-del-btn{background:transparent;border:none;color:var(–muted);font-size:11px;cursor:pointer;padding:4px 6px;border-radius:4px;opacity:0;transition:all .12s;flex-shrink:0;}
+.emp-row:hover .emp-del-btn{opacity:1;}
+.emp-del-btn:hover{color:var(–red);background:var(–red-bg);}
 .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
 .emp-meta{flex:1;min-width:0;}
 .emp-name-sb{font-size:12px;font-weight:700;}
@@ -54,8 +58,9 @@ header{background:#1a1714;color:#f7f4ef;display:flex;align-items:center;justify-
 .sort-wrap{display:flex;align-items:center;gap:8px;font-size:11px;color:var(–muted);font-weight:700;}
 .sort-sel{border:1px solid var(–border);background:var(–surface);padding:5px 9px;border-radius:6px;font-family:‘Manrope’,sans-serif;font-size:11px;color:var(–text);cursor:pointer;outline:none;}
 .frow{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap;}
-.ftab{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(–border);background:transparent;color:var(–muted);font-family:‘Manrope’,sans-serif;transition:all .15s;}
-.ftab:hover,.ftab.active{background:var(–text);color:#fff;border-color:var(–text);}
+.ftab{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(–border);background:var(–surface);color:var(–text);font-family:‘Manrope’,sans-serif;transition:all .15s;}
+.ftab:hover{background:var(–surface2);border-color:var(–muted);}
+.ftab.active{background:#1a1714;color:#fff;border-color:#1a1714;}
 
 /* TASK CARDS */
 .tasks-list{display:flex;flex-direction:column;gap:10px;}
@@ -107,9 +112,10 @@ header{background:#1a1714;color:#f7f4ef;display:flex;align-items:center;justify-
 .ibtn:hover{border-color:var(–accent);color:var(–accent);}
 .tc-actions{display:none;gap:8px;padding:0 16px 10px;justify-content:flex-end;}
 .tc.open .tc-actions{display:flex;}
-.txbtn{font-family:‘Manrope’,sans-serif;font-size:11px;font-weight:700;color:var(–muted);background:transparent;border:1px solid var(–border);padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .12s;}
-.txbtn:hover{border-color:var(–accent);color:var(–accent);}
-.txbtn.danger:hover{border-color:var(–red);color:var(–red);}
+.txbtn{font-family:‘Manrope’,sans-serif;font-size:11px;font-weight:700;color:var(–text);background:var(–surface2);border:1px solid var(–border);padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .12s;}
+.txbtn:hover{background:var(–text);color:#fff;border-color:var(–text);}
+.txbtn.danger{color:var(–red);}
+.txbtn.danger:hover{background:var(–red);color:#fff;border-color:var(–red);}
 
 .empty{text-align:center;padding:60px 20px;color:var(–muted);}
 .empty .ico{font-size:40px;margin-bottom:10px;}
@@ -372,7 +378,7 @@ let EMP=[
 ];
 
 let tasks=[], changelog=[], nid=1, eid=100;
-let view='tasks', fstatus='all', sort='priority', empF=null;
+let view='tasks', fstatus='active', sort='priority', empF=null;
 let editTaskId=null, editStageCtx=null, selectedColor=PALETTE[0];
 
 // ── UTILS ──
@@ -457,14 +463,17 @@ function renderSidebar(){
     const lp=Math.min(100,hrs/40*100);
     const lc=lp>80?'#b91c1c':lp>50?'#c86a1a':'#2a7a4b';
     const init=e.name.slice(0,2).toUpperCase();
-    h+=`<button class="emp-btn ${empF===e.id?'active':''}" onclick="setEmpF('${e.id}')">
-      <div class="av" style="background:${e.color}22;color:${e.color}">${init}</div>
-      <div class="emp-meta">
-        <div class="emp-name-sb">${e.name}</div>
-        <div class="emp-load-sb">${hrs} godz. do przodu</div>
-        <div class="lb"><div class="lbf" style="width:${lp}%;background:${lc}"></div></div>
-      </div>
-    </button>`;
+    h+=`<div class="emp-row ${empF===e.id?'active':''}">
+      <button class="emp-btn" style="flex:1" onclick="setEmpF('${e.id}')">
+        <div class="av" style="background:${e.color}22;color:${e.color}">${init}</div>
+        <div class="emp-meta">
+          <div class="emp-name-sb">${e.name}</div>
+          <div class="emp-load-sb">${hrs} godz. do przodu</div>
+          <div class="lb"><div class="lbf" style="width:${lp}%;background:${lc}"></div></div>
+        </div>
+      </button>
+      <button class="emp-del-btn" onclick="deleteEmp('${e.id}')" title="Usuń pracownika">✕</button>
+    </div>`;
   });
   document.getElementById('empList').innerHTML=h;
 }
@@ -474,6 +483,7 @@ function renderTasks(){
   let list=tasks.filter(t=>{
     if(empF&&!t.stages.some(s=>s.on&&s.empId===empF))return false;
     if(fstatus==='all')return true;
+    if(fstatus==='active')return tPct(t)<100; // not done
     if(fstatus==='done')return tPct(t)===100;
     if(fstatus==='overdue'){const d=pd(t.deadline);return d&&d<today()&&tPct(t)<100;}
     if(fstatus==='pause')return t.stages.some(s=>s.on&&s.status==='pause');
@@ -492,11 +502,12 @@ function renderTasks(){
     </div>
   </div>
   <div class="frow">
-    <button class="ftab ${fstatus==='all'?'active':''}" onclick="setF('all')">Wszystkie</button>
+    <button class="ftab ${fstatus==='active'?'active':''}" onclick="setF('active')">W toku</button>
     <button class="ftab ${fstatus==='inwork'?'active':''}" onclick="setF('inwork')">W trakcie</button>
     <button class="ftab ${fstatus==='pause'?'active':''}" onclick="setF('pause')">Wstrzymane</button>
     <button class="ftab ${fstatus==='overdue'?'active':''}" onclick="setF('overdue')">🔴 Przeterminowane</button>
     <button class="ftab ${fstatus==='done'?'active':''}" onclick="setF('done')">Gotowe</button>
+    <button class="ftab ${fstatus==='all'?'active':''}" onclick="setF('all')">Wszystkie</button>
   </div>
   <div class="tasks-list">`;
   if(!list.length) h+=`<div class="empty"><div class="ico">📭</div><p>Brak zadań</p></div>`;
@@ -687,7 +698,11 @@ function renderLog(){
   let h=`<div class="log-wrap">
   <div class="log-header">
     <div class="log-ttl">Historia zmian</div>
-    ${changelog.length?`<button class="log-clear-btn" onclick="clearLog()">Wyczyść historię</button>`:''}
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="log-clear-btn" style="background:#1a1714;color:#fff;border-color:#1a1714" onclick="exportJSON()">⬇ Pobierz JSON</button>
+      <label class="log-clear-btn" style="cursor:pointer;margin:0">⬆ Wczytaj JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+      ${changelog.length?`<button class="log-clear-btn" onclick="clearLog()">Wyczyść historię</button>`:''}
+    </div>
   </div>`;
   if(!changelog.length){
     h+=`<div class="empty"><div class="ico">📜</div><p>Brak zmian</p></div>`;
@@ -883,6 +898,53 @@ function saveEmp(){
   EMP.push({id,name,color:selectedColor});
   logChange('system','emp',`Dodano pracownika: <strong>${name}</strong>`);
   closeOv('empOv');render();
+}
+
+function deleteEmp(id){
+  const e=eObj(id);
+  if(!confirm(`Usunąć pracownika ${e?.name}? Etapy przypisane do tej osoby zostaną bez wykonawcy.`))return;
+  // remove from EMP
+  EMP=EMP.filter(x=>x.id!==id);
+  // unassign from stages
+  tasks.forEach(t=>t.stages.forEach(s=>{if(s.empId===id)s.empId='';}));
+  if(empF===id) empF=null;
+  logChange('system','del',`Usunięto pracownika: <strong>${e?.name||id}</strong>`);
+  render();
+}
+
+function exportJSON(){
+  const data={tasks,employees:EMP,changelog,nid,eid};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='redakcja-zadania-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.tasks||!data.employees) throw new Error('Nieprawidłowy format');
+      if(!confirm('Zastąpić wszystkie dane danymi z pliku?')) return;
+      tasks=data.tasks||[];
+      EMP=data.employees||EMP;
+      changelog=data.changelog||[];
+      nid=data.nid||1;
+      eid=data.eid||100;
+      logChange('system','task','Dane wczytane z pliku JSON');
+      render();
+    }catch(err){
+      alert('Błąd wczytywania pliku: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value=''; // reset so same file can be loaded again
 }
 
 // ── KONTROLKI ──
