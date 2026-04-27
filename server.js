@@ -1,40 +1,78 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const express = require(‘express’);
+const { MongoClient } = require(‘mongodb’);
+const path = require(‘path’);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_PATH = path.join(__dirname, 'data', 'db.json');
 
-if (!fs.existsSync(path.join(__dirname, 'data'))) {
-  fs.mkdirSync(path.join(__dirname, 'data'));
+const MONGO_URL = ‘mongodb+srv://dziatkovolha_db_user:A5NvtGIHiZejdn5D@cluster0.n9goava.mongodb.net/?appName=Cluster0’;
+const DB_NAME = ‘redakcja’;
+const COL_NAME = ‘data’;
+
+let col = null;
+
+async function connectDB() {
+try {
+const client = new MongoClient(MONGO_URL);
+await client.connect();
+col = client.db(DB_NAME).collection(COL_NAME);
+console.log(‘MongoDB połączony!’);
+const existing = await col.findOne({id: ‘main’});
+if (!existing) {
+await col.insertOne({
+id: ‘main’,
+tasks: [],
+employees: [
+{id:‘szef’, name:‘Szef’,    color:’#c8421a’},
+{id:‘aga’,  name:‘Aga’,     color:’#2a7a4b’},
+{id:‘gzh’,  name:‘Grzegorz’,color:’#1a4a8a’},
+{id:‘olya’, name:‘Ola’,     color:’#7c3aed’},
+{id:‘eva’,  name:‘Ewa’,     color:’#c86a1a’},
+],
+changelog: [],
+nid: 1,
+eid: 100
+});
+console.log(‘Domyślne dane utworzone’);
 }
-if (!fs.existsSync(DB_PATH)) {
-  fs.writeFileSync(DB_PATH, JSON.stringify({tasks:[],employees:[],changelog:[],nid:1,eid:100}));
+} catch(err) {
+console.error(‘Błąd MongoDB:’, err.message);
+}
 }
 
-app.use(express.json({limit:'5mb'}));
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.json({limit: ‘10mb’}));
+app.use(express.static(path.join(__dirname, ‘public’)));
 
-function readDB(){
-  try{return JSON.parse(fs.readFileSync(DB_PATH,'utf8'));}
-  catch{return{tasks:[],employees:[],changelog:[],nid:1,eid:100};}
+app.get(’/api/data’, async (req, res) => {
+try {
+if (!col) return res.status(503).json({error: ‘Baza niedostępna’});
+const doc = await col.findOne({id: ‘main’});
+if (!doc) return res.status(404).json({error: ‘Brak danych’});
+const {_id, id, …data} = doc;
+res.json(data);
+} catch(err) {
+res.status(500).json({error: err.message});
 }
-function writeDB(data){
-  fs.writeFileSync(DB_PATH,JSON.stringify(data,null,2));
-}
-
-app.get('/api/data',(req,res)=>{
-  res.json(readDB());
 });
 
-app.post('/api/data',(req,res)=>{
-  const db=req.body;
-  if(!db||typeof db!=='object') return res.status(400).json({error:'Invalid data'});
-  writeDB(db);
-  res.json({ok:true});
+app.post(’/api/data’, async (req, res) => {
+try {
+if (!col) return res.status(503).json({error: ‘Baza niedostępna’});
+const data = req.body;
+if (!data || typeof data !== ‘object’) return res.status(400).json({error: ‘Złe dane’});
+await col.updateOne(
+{id: ‘main’},
+{$set: {…data, id: ‘main’}},
+{upsert: true}
+);
+res.json({ok: true});
+} catch(err) {
+res.status(500).json({error: err.message});
+}
 });
 
-app.listen(PORT,()=>{
-  console.log('Redakcja Zadania running on port '+PORT);
+connectDB().then(() => {
+app.listen(PORT, () => {
+console.log(’RED.ZADANIA działa na porcie ’ + PORT);
+});
 });
